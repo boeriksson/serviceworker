@@ -5,7 +5,7 @@ var urlsToCache = [
 ];
 
 self.addEventListener('install', (event) => {
-    self.skipWaiting()
+    console.log('ServiceWorker install running...')
 
     // Perform install steps
     event.waitUntil(
@@ -17,9 +17,27 @@ self.addEventListener('install', (event) => {
     );
 });
 
-self.addEventListener('clearCache', () => {
-    console.log('serviceWorker clearing cache...')
-    caches.delete(CACHE_NAME).then((data) => console.log('then: ', data)).catch((e) => console.log('catch: ', e))
+self.addEventListener('activate', function(event) {
+    console.log('ServiceWorker activate running...')
+    event.waitUntil(
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(
+                cacheNames.filter(function(cacheName) {
+                    return cacheName != CACHE_NAME
+                }).map(function(cacheName) {
+                    return caches.delete(cacheName)
+                })
+            )
+        })
+    )
+})
+
+self.addEventListener('message', (message) => {
+    console.log('ServiceWorker message: ', message)
+    if (message?.data?.type === 'clearcache') {
+        console.log('serviceWorker clearing cache')
+        caches.delete(CACHE_NAME).then((data) => console.log('then: ', data)).catch((e) => console.log('catch: ', e))
+    }
 })
 
 self.addEventListener('fetch', (event) => {

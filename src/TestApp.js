@@ -9,7 +9,7 @@ export default () => {
     }
     const handleClick2 = (e) => {
         console.log('handleclick2')
-        navigator.serviceWorker.controller.postMessage({ type: 'clearCache'})
+        navigator.serviceWorker.controller.postMessage({ type: 'clearcache'})
     }
 
     return (
