@@ -1,10 +1,12 @@
 console.log('in serviceworker.. ')
-var CACHE_NAME = 'testCache';
+var CACHE_NAME = 'v1';
 var urlsToCache = [
-    'http://localhost:8080/testfile.json'
+    'testfile.json'
 ];
 
-self.addEventListener('install', function(event) {
+self.addEventListener('install', (event) => {
+    self.skipWaiting()
+
     // Perform install steps
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -14,6 +16,11 @@ self.addEventListener('install', function(event) {
             })
     );
 });
+
+self.addEventListener('clearCache', () => {
+    console.log('serviceWorker clearing cache...')
+    caches.delete(CACHE_NAME).then((data) => console.log('then: ', data)).catch((e) => console.log('catch: ', e))
+})
 
 self.addEventListener('fetch', (event) => {
     console.log('fetch event... event.request: ', event.request)
